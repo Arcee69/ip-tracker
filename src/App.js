@@ -2,11 +2,9 @@ import React from "react";
 import background from "./asset/images/pattern-bg.png"
 import Search from "./components/Search";
 import StreetMap from "./components/StreetMap";
-import { MapProvider } from "./MapContext";
 
 function App() {
   return (
-    <MapProvider>
       <div className="w-full">
         <div className="w-full h-64" style={{ backgroundImage: `url(${background})` }}>
           <div className="flex flex-row justify-center">
@@ -16,7 +14,6 @@ function App() {
         </div>
         <StreetMap />
       </div>
-    </MapProvider>
   );
 }
 

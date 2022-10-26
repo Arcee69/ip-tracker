@@ -1,15 +1,17 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Arrow from "../asset/images/icon-arrow.svg";
-import { MapContext} from "../MapContext";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useDispatch} from 'react-redux';
 import * as Yup from "yup";
 import axios from 'axios';
 import "../App.css";
+import { getIpRequest, getIpSuccess, getIpFailure, getIpReset } from '../redux/action/ipAddress';
 
 const Search = () => {
     const [ipAddressData, setipAddressData] = useState();
     const [loading, setLoading] = useState(false);
-    const [ipData, setIpData] = useState(MapContext);
+
+    const dispatch = useDispatch();
 
     const ipAddressSchema = Yup.object().shape({
         ipAddress: Yup.string()
@@ -25,19 +27,25 @@ const Search = () => {
     const apiKey = "at_BqHSurbemZjMNGoPiEzJU9Pklk0hS";
 
     const submitIpAddress = async (values) => {
+        dispatch(getIpRequest())
+
         setLoading(true);
         await axios.get(`https://geo.ipify.org/api/v2/country,city?apiKey=at_BqHSurbemZjMNGoPiEzJU9Pklk0hS&ipAddress=${values?.ipAddress}`)
         .then((response) => {
-            // setipAddressData(response?.data);
-            setIpData(response?.data);
+            dispatch(getIpSuccess(response?.data))
+            setipAddressData(response?.data);
             setLoading(false);
         })
         .catch((err) => {
+            dispatch(getIpFailure(err))
             return err;
         })
     };
 
-    console.log(ipData, "hello");
+    // useEffect(() => {
+    //     submitIpAddress();
+    // }, [ipAddressData])
+
 
     return (
     <>
@@ -73,7 +81,10 @@ const Search = () => {
                                 </div>
                                 <div className='sm:w-6/6 xs:w-6/6 text-center'>
                                     <button type="submit" className='text-white xs:text-sm h-10 rounded-r-md w-10 bg-black p-3 sm:text-sm  border'>
-                                        {loading ? "Loading..." : <img src={Arrow} alt="arrow" />}
+                                        {loading ? 
+                                            "..."
+                                            : <img src={Arrow} alt="arrow" />
+                                        }
                                     </button>   
                                 </div>
                             </div>
@@ -85,24 +96,24 @@ const Search = () => {
                 )}
             </Formik>
         </div>
-        {ipData &&
+        {ipAddressData &&
             <div className="w-full mt-5 relative sm:top-12 xs:top-14 z-10 flex flex-row items-center justify-center">
                 <div className='xs:w-11/12 sm:w-9/12 border rounded-md mx-auto flex xs:flex-col sm:flex-row sm:justify-between sm:items-center xs:p-3  sm:p-5  bg-white'>
                     <div className='flex flex-col w-4/12'>
                         <div className='text-xs text-gray-400 font-medium'>IP ADDRESS</div>
-                        <div className='xs:w-12/12 sm:w-3/6 font-medium text-black sm:mt-2'>{ipData?.ip}</div>
+                        <div className='xs:w-12/12 sm:w-3/6 font-medium text-black sm:mt-2'>{ipAddressData?.ip}</div>
                     </div>
                     <div className='flex flex-col w-4/12'>
                         <div className='text-xs text-gray-400 font-medium'>LOCATION</div>
-                        <div className='xs:w-12/12 sm:w-3/6 font-medium text-black sm:mt-2'>{ipData?.location?.city}</div>
+                        <div className='xs:w-12/12 sm:w-3/6 font-medium text-black sm:mt-2'>{ipAddressData?.location?.city}</div>
                     </div>
                     <div className='flex flex-col w-4/12'>
                         <div className='text-xs text-gray-400 font-medium'>TIMEZONE</div>
-                        <div className='xs:w-12/12 sm:w-3/6 font-medium text-black  sm:mt-2'>{`UTC${ipData?.location?.timezone}`}</div>
+                        <div className='xs:w-12/12 sm:w-3/6 font-medium text-black  sm:mt-2'>{`UTC${ipAddressData?.location?.timezone}`}</div>
                     </div>
                     <div className='flex flex-col w-4/12'>
                         <div className='text-xs text-gray-400 font-medium'>ISP</div>
-                        <div className='xs:w-12/12 sm:w-3/6 font-medium text-black sm:mt-2'>{ipData?.isp}</div>
+                        <div className='xs:w-12/12 sm:w-3/6 font-medium text-black sm:mt-2'>{ipAddressData?.isp}</div>
                     </div>
                 </div>
             </div> 
