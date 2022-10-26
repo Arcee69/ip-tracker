@@ -1,24 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import background from "./asset/images/pattern-bg.png"
+import Search from "./components/Search";
+import StreetMap from "./components/StreetMap";
+import { MapProvider } from "./MapContext";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <MapProvider>
+      <div className="w-full">
+        <div className="w-full h-64" style={{ backgroundImage: `url(${background})` }}>
+          <div className="flex flex-row justify-center">
+            <div className="text-3xl font-bold mt-4 text-white">IP Address Tracker</div>
+          </div>
+          <Search />
+        </div>
+        <StreetMap />
+      </div>
+    </MapProvider>
   );
 }
 
